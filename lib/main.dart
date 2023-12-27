@@ -56,13 +56,20 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'JourneyBuddy'),
+      //home: const MyHomePage(title: 'JourneyBuddy'),
+      initialRoute: MyHomePage.routeName,
+      routes: {
+        MyHomePage.routeName: (context) => const MyHomePage(title: 'JourneyBuddy'),
+        SecondScreen.routeName : (context) => const SecondScreen(),
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
+  static const String routeName = '/';
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -169,9 +176,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: (){
+          Navigator.pushNamed(context, SecondScreen.routeName, arguments: _counter);
+        },
+        child: const Text('Locais de Interesse'),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
