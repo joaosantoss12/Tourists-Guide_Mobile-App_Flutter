@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>405870838653-n8edhau20toe3e19l83ba4gcvi3ualtc.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.405870838653-n8edhau20toe3e19l83ba4gcvi3ualtc</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>405870838653-0slii8itkom58rkpqhp9vvan8av4pd0t.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCegTAKz8p0hQOx8Q8UqiqAM3cZhsqnLP8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>405870838653</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.journeyBuddyFlutter</string>
+	<key>PROJECT_ID</key>
+	<string>journeybuddy---amov---2324</string>
+	<key>STORAGE_BUCKET</key>
+	<string>journeybuddy---amov---2324.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:405870838653:ios:8b37280703aba0a716c214</string>
+</dict>
+</plist>

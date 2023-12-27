@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:location/location.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
+
+void initFirebase() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
+
 void main() {
+  // Ensure that Flutter is initialized before Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  initFirebase();
   runApp(const MyApp());
 }
+
+
+class Localizacao{
+
+}
+class LocalInteresse{
+
+}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,7 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'JourneyBuddy',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,10 +53,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'JourneyBuddy'),
     );
   }
 }
@@ -55,6 +80,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  List<Localizacao>? _listaLocalizacoes;
+  bool _fetchingData = false;
+
+  Future<void> _fetchLocalizacoes() async{
+    try{
+
+    }
+    catch(ex){
+      debugPrint('Something went wrong: $ex');
+    }
+    finally{
+      setState(() => _fetchingData = false);
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+
   int _counter = 0;
 
   void _incrementCounter() {
