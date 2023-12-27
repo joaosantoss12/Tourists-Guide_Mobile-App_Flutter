@@ -29,6 +29,13 @@
             {
               "client_id": "405870838653-petg81fc7vnglce87ke6osl8vbbg6qbr.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "405870838653-n8edhau20toe3e19l83ba4gcvi3ualtc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.journeyBuddyFlutter"
+              }
             }
           ]
         }
@@ -74,6 +81,13 @@
             {
               "client_id": "405870838653-petg81fc7vnglce87ke6osl8vbbg6qbr.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "405870838653-n8edhau20toe3e19l83ba4gcvi3ualtc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.journeyBuddyFlutter"
+              }
             }
           ]
         }
