@@ -12,6 +12,13 @@ class LocalInteresse {
   var imagemURL;
   var estado;
   var categoria;
+  var numGostos;
+  var numNaoGostos;
+
+  Color _LikeButtonColor;
+  Color _DislikeButtonColor;
+
+  LocalInteresse() : _LikeButtonColor = Colors.blue, _DislikeButtonColor = Colors.blue;
 }
 
 class SecondScreen extends StatefulWidget {
@@ -36,6 +43,10 @@ class _SecondScreenState extends State<SecondScreen> {
   List<LocalInteresse>? _listaLocaisInteresse = [];
   bool _fetchingData = false;
 
+  String? _currentLocalInteresse = null;
+
+  String? _error = null;
+
 
   // FIREBASE
 
@@ -47,6 +58,7 @@ class _SecondScreenState extends State<SecondScreen> {
       .collection('Locais de Interesse').get();
       for (var doc in collection.docs) {
         var l = new LocalInteresse();
+
         l.nome = doc['nome'];
         l.descricao = doc['descrição'];
         l.categoria = doc['categoria'];
@@ -54,6 +66,12 @@ class _SecondScreenState extends State<SecondScreen> {
         l.longitude = (doc['coordenadas'] as GeoPoint).longitude;
         l.imagemURL = doc['imagemURL'];
         l.estado = doc['estado'];
+
+        // Check if 'numGostos' exists, otherwise set it to 0
+        l.numGostos = doc.data().containsKey('numGostos') ? doc['numGostos'] : 0;
+
+        // Check if 'numNaoGostos' exists, otherwise set it to 0
+        l.numNaoGostos = doc.data().containsKey('numNaoGostos') ? doc['numNaoGostos'] : 0;
 
         _listaLocaisInteresse!.add(l);
       }
@@ -65,6 +83,35 @@ class _SecondScreenState extends State<SecondScreen> {
       setState(() => _fetchingData = false);
     }
   }
+
+
+  void addLike() async{
+    var db = FirebaseFirestore.instance;
+    var document = db.collection('Localidades').doc(_nomeLocalizacao).collection('Locais de Interesse').doc(_currentLocalInteresse);
+    var data = await document.get(const GetOptions(source: Source.server));
+    if (data.exists) {
+      var numGostos = data.data()!.containsKey('numGostos') ? data['numGostos'] + 1 : 1;
+      document.update({'numGostos': numGostos}).then(
+              (res) => setState(() { _error = null; }),
+          onError: (e) => setState(() { _error = e.toString();})
+      );
+    }
+    else {
+      setState(() { _error = "Document doesn't exist";});
+    }
+  }
+
+  void removeLike(){
+
+  }
+
+  void addDislike(){
+
+  }
+  void removeDislike(){
+
+  }
+
 
   // END FIREBASE
 
@@ -90,8 +137,9 @@ class _SecondScreenState extends State<SecondScreen> {
 
               if (_fetchingData) const CircularProgressIndicator(),
 
-              if (!_fetchingData && _listaLocaisInteresse != null &&
-                  _listaLocaisInteresse!.isNotEmpty)
+              if (_error != null) Text("Error: $_error"),
+
+              if (!_fetchingData && _listaLocaisInteresse != null && _listaLocaisInteresse!.isNotEmpty)
                 SizedBox(
                     height: MediaQuery
                         .of(context)
@@ -143,20 +191,69 @@ class _SecondScreenState extends State<SecondScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            ElevatedButton(
-                              onPressed: () {
-                                // Handle the onPressed for the first button
-                              },
-                              child: Text('Gosto'),
+
+                            Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                            if(_listaLocaisInteresse![index]._LikeButtonColor == Colors.green){
+                                                _listaLocaisInteresse![index]._LikeButtonColor = Colors.blue;
+                                            }
+                                            else{
+                                                _currentLocalInteresse= _listaLocaisInteresse![index].nome;
+                                                addLike();
+                                                _listaLocaisInteresse![index]._LikeButtonColor = Colors.green;
+                                                _listaLocaisInteresse![index]._DislikeButtonColor = Colors.blue;
+                                            }
+                                        });
+                                      },
+                                      child: Text('Gosto'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: _listaLocaisInteresse![index]._LikeButtonColor,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                    ),
+
+                                    Text(
+                                      _listaLocaisInteresse![index].numGostos.toString(),
+                                    ),
+                                ],
+                              ),
                             ),
 
                             Spacer(),
 
-                            ElevatedButton(
-                              onPressed: () {
+                            Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                        if(_listaLocaisInteresse![index]._DislikeButtonColor == Colors.red){
+                                           _listaLocaisInteresse![index]._DislikeButtonColor = Colors.blue;
+                                        }
+                                        else{
+                                            _listaLocaisInteresse![index]._DislikeButtonColor = Colors.red;
+                                            _listaLocaisInteresse![index]._LikeButtonColor = Colors.blue;
+                                        }
+                                    });
+                                  },
+                                  child: Text('Não Gosto'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: _listaLocaisInteresse![index]._DislikeButtonColor,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
 
-                              },
-                              child: Text('Não Gosto'),
+                                Text(
+                                   _listaLocaisInteresse![index].numNaoGostos.toString(),
+                                ),
+                            ],
+                            ),
                             ),
                           ],
                         ),
