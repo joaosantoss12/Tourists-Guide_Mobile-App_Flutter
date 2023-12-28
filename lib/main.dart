@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,17 +10,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
 import 'second_screen.dart';
+import 'history_screen.dart';
 
-void initFirebase() async {
+Future<void> initFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 }
 
-void main() {
+Future<void> main() async {
   // Ensure that Flutter is initialized before Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  initFirebase();
+  await initFirebase();
   runApp(const MyApp());
 }
 
@@ -30,6 +33,8 @@ class Localizacao{
     var longitude;
     var imagemURL;
     var estado;
+
+    var distancia;
 }
 
 
@@ -51,6 +56,7 @@ class MyApp extends StatelessWidget {
       routes: {
         MyHomePage.routeName: (context) => const MyHomePage(title: 'Localizações'),
         SecondScreen.routeName : (context) => const SecondScreen(),
+        HistoryScreen.routeName : (context) => const HistoryScreen(),
       },
     );
   }
@@ -69,15 +75,23 @@ class MyHomePage extends StatefulWidget {
 
 
 class _MyHomePageState extends State<MyHomePage> {
-
   List<Localizacao>? _listaLocalizacoes = [];
   bool _fetchingData = false;
+
+  final List<String> list = <String>['A-Z', 'Z-A', 'Distância ▲', 'Distância ▼'];
+  String dropdownValue = 'none';
 
 
   @override
   void initState() {
     super.initState();
+    location.getLocation();
+    _initializeData();
   }
+  Future<void> _initializeData() async {
+    await _fetchLocalizacoes();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -101,6 +115,17 @@ class _MyHomePageState extends State<MyHomePage> {
               l.imagemURL = doc['imagemURL'];
               l.estado = doc['estado'];
 
+              var distanceX=_locationData.latitude!-l.latitude;
+              var distanceY=_locationData.longitude!-l.longitude;
+
+              if(distanceX<0){
+                distanceX=distanceX*-1;
+              }
+                if(distanceY<0){
+                    distanceY=distanceY*-1;
+                }
+
+              l.distancia =  distanceX+distanceY;
               _listaLocalizacoes!.add(l);
           }
       }
@@ -113,6 +138,54 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
   // END FIREBASE
+
+
+  // LOCATION
+
+  Location location = Location();
+
+  bool _serviceEnabled = false;
+  PermissionStatus _permissionGranted = PermissionStatus.denied;
+  LocationData _locationData = LocationData.fromMap({
+    "latitude": 40.192639,
+    "longitude": -8.411899,
+  });
+
+  void getLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+    _locationData = await location.getLocation();
+    setState(() { });
+  }
+
+  StreamSubscription<LocationData>? _locationSubscription;
+
+  void startLocationUpdates() {
+    _locationSubscription=location.onLocationChanged.listen((LocationData currentLocation) {
+      setState(() {_locationData = currentLocation;});
+    });
+  }
+
+  void stopLocationUpdates() {
+    _locationSubscription?.cancel();
+    _locationSubscription=null;
+  }
+
+  // END LOCATION
+
 
   @override
   Widget build(BuildContext context) {
@@ -131,15 +204,55 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
 
+            Container(
+              margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
+
+            child: DropdownMenu<String>(
+              initialSelection: dropdownValue,
+              enableSearch: false,
+              onSelected: (String? value) {
+                setState(() {
+                  dropdownValue = value!;
+                  switch(dropdownValue){
+                    case 'A-Z':
+                      _listaLocalizacoes!.sort((a, b) => a.nome.compareTo(b.nome));
+                      break;
+                    case 'Z-A':
+                      _listaLocalizacoes!.sort((a, b) => b.nome.compareTo(a.nome));
+                      break;
+                    case 'Distância ▲':
+                        _listaLocalizacoes!.sort((a, b) => a.distancia.compareTo(b.distancia));
+
+                      break;
+                    case 'Distância ▼':
+                        _listaLocalizacoes!.sort((a, b) => b.distancia.compareTo(a.distancia));
+
+                      break;
+                  }
+                });
+              },
+              dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(value: value, label: value);
+              }).toList(),
+            ),
+            ),
+
+
+
             if (_fetchingData) const CircularProgressIndicator(),
 
             if (!_fetchingData && _listaLocalizacoes != null && _listaLocalizacoes!.isNotEmpty)
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                width: MediaQuery.of(context).size.width * 0.8,
+              Expanded(
+              child:SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
                 child: ListView.separated(
                   itemCount: _listaLocalizacoes!.length,
-                  separatorBuilder: (_, __) => const Divider(thickness: 2.0),
+
+                  separatorBuilder: (_, __) => Container(
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
+                    child: Divider(thickness: 2.0),
+                  ),
+
                   itemBuilder: (BuildContext context, int index) => Column(
                     children: [
                       Text(
@@ -149,23 +262,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       Text(
                         _listaLocalizacoes![index].descricao,
                       ),
-                      /*Text(
-                        _listaLocalizacoes![index].latitude.toString(),
+
+                      Container(
+                        margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
+                        child: Image.network(
+                          _listaLocalizacoes![index].imagemURL,
+                        ),
                       ),
-                      Text(
-                        _listaLocalizacoes![index].longitude.toString(),
-                      ),*/
-                      /*Text(
-                        _listaLocalizacoes![index].imagemURL,
-                      ),*/
-                      Image.network(
-                        _listaLocalizacoes![index].imagemURL,
-                       width: MediaQuery.of(context).size.height * 0.7,
-                        height: MediaQuery.of(context).size.height * 0.5,
-                      ),
-                      /*Text(
-                        _listaLocalizacoes![index].estado,
-                      ),*/
+
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(
@@ -179,7 +283,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
-              )
+              ),
+              ),
+            ElevatedButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, HistoryScreen.routeName);
+                },
+                child: Text('Histórico de Locais de Interesse')
+            )
           ],
         ),
       ),

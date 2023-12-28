@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>I need your location for calculating the distance between you and the cities/points of interest</string>
+
+    
+
 </dict>
 </plist>
