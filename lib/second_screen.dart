@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class LocalInteresse {
   var nome;
   var descricao;
@@ -15,10 +17,9 @@ class LocalInteresse {
   var numGostos;
   var numNaoGostos;
 
-  Color _LikeButtonColor;
-  Color _DislikeButtonColor;
+  late Color _LikeButtonColor;
+  late Color _DislikeButtonColor;
 
-  LocalInteresse() : _LikeButtonColor = Colors.blue, _DislikeButtonColor = Colors.blue;
 }
 
 class SecondScreen extends StatefulWidget {
@@ -73,6 +74,13 @@ class _SecondScreenState extends State<SecondScreen> {
         // Check if 'numNaoGostos' exists, otherwise set it to 0
         l.numNaoGostos = doc.data().containsKey('numNaoGostos') ? doc['numNaoGostos'] : 0;
 
+        var prefs = await SharedPreferences.getInstance();
+        setState (() {
+          l._LikeButtonColor = prefs.getInt (l.nome+"like") == 1 ? Colors.green : Colors.blue;
+          l._DislikeButtonColor = prefs.getInt (l.nome+"dislike") == 1 ? Colors.red : Colors.blue;
+        });
+
+
         _listaLocaisInteresse!.add(l);
       }
     }
@@ -92,7 +100,7 @@ class _SecondScreenState extends State<SecondScreen> {
     if (data.exists) {
       var numGostos = data.data()!.containsKey('numGostos') ? data['numGostos'] + 1 : 1;
       document.update({'numGostos': numGostos}).then(
-              (res) => setState(() { _error = null; }),
+              (res) => setState(() { _error = null; _fetchLocaisInteresse(); }),
           onError: (e) => setState(() { _error = e.toString();})
       );
     }
@@ -198,15 +206,22 @@ class _SecondScreenState extends State<SecondScreen> {
                                 children: <Widget>[
                                     ElevatedButton(
                                       onPressed: () {
-                                        setState(() {
+                                        setState(() async {
+                                            var prefs = await SharedPreferences.getInstance();
+
                                             if(_listaLocaisInteresse![index]._LikeButtonColor == Colors.green){
-                                                _listaLocaisInteresse![index]._LikeButtonColor = Colors.blue;
+                                              await prefs.setInt(_listaLocaisInteresse![index].nome+"like", 0);
+
+                                              _listaLocaisInteresse![index]._LikeButtonColor = Colors.blue;
                                             }
                                             else{
-                                                _currentLocalInteresse= _listaLocaisInteresse![index].nome;
-                                                addLike();
-                                                _listaLocaisInteresse![index]._LikeButtonColor = Colors.green;
-                                                _listaLocaisInteresse![index]._DislikeButtonColor = Colors.blue;
+                                              await prefs.setInt(_listaLocaisInteresse![index].nome+"like", 1);
+                                              await prefs.setInt(_listaLocaisInteresse![index].nome+"dislike", 0);
+
+                                              _currentLocalInteresse= _listaLocaisInteresse![index].nome;
+                                              addLike();
+                                              _listaLocaisInteresse![index]._LikeButtonColor = Colors.green;
+                                              _listaLocaisInteresse![index]._DislikeButtonColor = Colors.blue;
                                             }
                                         });
                                       },
@@ -232,11 +247,18 @@ class _SecondScreenState extends State<SecondScreen> {
                                                           children: <Widget>[
                                 ElevatedButton(
                                   onPressed: () {
-                                    setState(() {
+                                    setState(() async{
+                                        var prefs = await SharedPreferences.getInstance();
+
                                         if(_listaLocaisInteresse![index]._DislikeButtonColor == Colors.red){
+                                           await prefs.setInt(_listaLocaisInteresse![index].nome+"dislike", 0);
+
                                            _listaLocaisInteresse![index]._DislikeButtonColor = Colors.blue;
                                         }
                                         else{
+                                            await prefs.setInt(_listaLocaisInteresse![index].nome+"dislike", 1);
+                                            await prefs.setInt(_listaLocaisInteresse![index].nome+"like", 0);
+
                                             _listaLocaisInteresse![index]._DislikeButtonColor = Colors.red;
                                             _listaLocaisInteresse![index]._LikeButtonColor = Colors.blue;
                                         }
