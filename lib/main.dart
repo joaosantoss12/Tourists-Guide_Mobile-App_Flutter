@@ -32,10 +32,6 @@ class Localizacao{
     var estado;
 }
 
-class LocalInteresse{
-
-}
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -116,22 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    void listDocuments() async {
-        var db = FirebaseFirestore.instance;
-        var collection = await db.collection('Localidades').get();
-        for(var doc in collection.docs) {
-            var l = new Localizacao();
-            l.nome = doc['nome'];
-            l.descricao = doc['descrição'];
-            l.latitude = (doc['coordenadas'] as GeoPoint).latitude;
-            l.longitude = (doc['coordenadas'] as GeoPoint).longitude;
-            l.imagemURL = doc['imagemURL'];
-            l.estado = doc['estado'];
-
-            _listaLocalizacoes?.add(l);
-        }
-    }
-
   // END FIREBASE
 
   @override
@@ -153,16 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
             if (_fetchingData) const CircularProgressIndicator(),
 
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              _listaLocalizacoes!.length.toString(),
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
             if (!_fetchingData && _listaLocalizacoes != null && _listaLocalizacoes!.isNotEmpty)
-              SizedBox(height: 200,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.75,
+                width: MediaQuery.of(context).size.width * 0.8,
                 child: ListView.separated(
                   itemCount: _listaLocalizacoes!.length,
                   separatorBuilder: (_, __) => const Divider(thickness: 2.0),
@@ -175,19 +149,33 @@ class _MyHomePageState extends State<MyHomePage> {
                       Text(
                         _listaLocalizacoes![index].descricao,
                       ),
-                        Text(
-                            _listaLocalizacoes![index].latitude.toString(),
-                        ),
-                        Text(
-                            _listaLocalizacoes![index].longitude.toString(),
-                        ),
-                        Text(
-                            _listaLocalizacoes![index].imagemURL,
-                        ),
-                        Text(
-                            _listaLocalizacoes![index].estado,
-                        ),
-
+                      /*Text(
+                        _listaLocalizacoes![index].latitude.toString(),
+                      ),
+                      Text(
+                        _listaLocalizacoes![index].longitude.toString(),
+                      ),*/
+                      /*Text(
+                        _listaLocalizacoes![index].imagemURL,
+                      ),*/
+                      Image.network(
+                        _listaLocalizacoes![index].imagemURL,
+                       width: MediaQuery.of(context).size.height * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.5,
+                      ),
+                      /*Text(
+                        _listaLocalizacoes![index].estado,
+                      ),*/
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            SecondScreen.routeName,
+                            arguments: _listaLocalizacoes![index].nome,
+                          );
+                        },
+                        child: Text('Locais de Interesse'),
+                      )
                     ],
                   ),
                 ),
