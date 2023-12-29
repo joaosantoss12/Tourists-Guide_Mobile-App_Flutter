@@ -240,47 +240,60 @@ class _MyHomePageState extends State<MyHomePage> {
 
             if (!_fetchingData && _listaLocalizacoes != null && _listaLocalizacoes!.isNotEmpty)
               Expanded(
-              child:SizedBox(
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: ListView.separated(
-                  itemCount: _listaLocalizacoes!.length,
-
-                  separatorBuilder: (_, __) => Container(
-                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
-                    child: Divider(thickness: 2.0),
-                  ),
-
-                  itemBuilder: (BuildContext context, int index) => Column(
-                    children: [
-                      Text(
-                        _listaLocalizacoes![index].nome,
-                        style: Theme.of(context).textTheme.headlineMedium,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: ListView.separated(
+                    itemCount: _listaLocalizacoes!.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 5.0), //espaço entre os items
+                    itemBuilder: (BuildContext context, int index) => Card(
+                      margin: EdgeInsets.symmetric(vertical: 10.0), // margem vertical
+                      elevation: 4.0, // shadow
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      Text(
-                        _listaLocalizacoes![index].descricao,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              _listaLocalizacoes![index].nome,
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              _listaLocalizacoes![index].descricao,
+                              textAlign: TextAlign.justify,
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.all(10.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
+                              child: Image.network(
+                                _listaLocalizacoes![index].imagemURL,
+                                width: double.infinity,
+                                height: 200.0, // Adjust the height as needed
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                SecondScreen.routeName,
+                                arguments: _listaLocalizacoes![index].nome,
+                              );
+                            },
+                            child: Text('Locais de Interesse'),
+                          )
+                        ],
                       ),
-
-                      Container(
-                        margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
-                        child: Image.network(
-                          _listaLocalizacoes![index].imagemURL,
-                        ),
-                      ),
-
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            SecondScreen.routeName,
-                            arguments: _listaLocalizacoes![index].nome,
-                          );
-                        },
-                        child: Text('Locais de Interesse'),
-                      )
-                    ],
+                    ),
                   ),
                 ),
-              ),
               ),
             ElevatedButton(
                 onPressed: (){
