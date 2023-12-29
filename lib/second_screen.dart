@@ -551,7 +551,9 @@ class _SecondScreenState extends State<SecondScreen> {
             children: <Widget>[
 
               if(!_fetchingData && _listaLocaisInteresse!.isNotEmpty && _listaCategorias!.isNotEmpty)
-                DropdownMenu<String>(
+                Container(
+                  margin: EdgeInsets.only(top: 10.0), // Adjust the margin as needed
+                child : DropdownMenu<String>(
                   initialSelection: dropdownValue,
                   onSelected: (String? value) {
                     setState(() {
@@ -575,6 +577,7 @@ class _SecondScreenState extends State<SecondScreen> {
                   dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
                     return DropdownMenuEntry<String>(value: value, label: value);
                   }).toList(),
+                ),
                 ),
 
 
