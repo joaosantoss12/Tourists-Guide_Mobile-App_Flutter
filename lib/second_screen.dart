@@ -169,38 +169,37 @@ class _SecondScreenState extends State<SecondScreen> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _currentLocalInteresse =
-                              _listaLocaisInteresse![index]
-                                  .nome;
+                          _currentLocalInteresse = _listaLocaisInteresse![index].nome;
 
-                          if (_listaLocaisInteresse![index]
-                              ._LikeButtonColor ==
-                              Colors.green) {
+                          if (_listaLocaisInteresse![index]._LikeButtonColor == Colors.green) {
                             removeLike(index, true);
+
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Voto removido com sucesso"),
+                            ));
                           }
                           else {
-                            if (_listaLocaisInteresse![index]
-                                ._DislikeButtonColor ==
-                                Colors.red) {
+                            if (_listaLocaisInteresse![index]._DislikeButtonColor == Colors.red) {
                               removeDislike(index, false);
                             }
 
                             addLike(index, true);
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Voto enviado com sucesso"),
+                            ));
                           }
                         });
                       },
                       child: Text('Gosto'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _listaLocaisInteresse![index]
-                            ._LikeButtonColor,
+                        backgroundColor: _listaLocaisInteresse![index]._LikeButtonColor,
                         foregroundColor: Colors.white,
 
                       ),
                     ),
 
                     Text(
-                      _listaLocaisInteresse![index]
-                          .numGostos.toString(),
+                      _listaLocaisInteresse![index].numGostos.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -219,36 +218,35 @@ class _SecondScreenState extends State<SecondScreen> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _currentLocalInteresse =
-                              _listaLocaisInteresse![index]
-                                  .nome;
-                          if (_listaLocaisInteresse![index]
-                              ._DislikeButtonColor ==
-                              Colors.red) {
+                          _currentLocalInteresse = _listaLocaisInteresse![index].nome;
+                          if (_listaLocaisInteresse![index]._DislikeButtonColor == Colors.red) {
                             removeDislike(index, true);
+
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Voto removido com sucesso"),
+                            ));
                           }
                           else {
-                            if (_listaLocaisInteresse![index]
-                                ._LikeButtonColor ==
-                                Colors.green) {
+                            if (_listaLocaisInteresse![index]._LikeButtonColor == Colors.green) {
                               removeLike(index, false);
                             }
 
                             addDislike(index, true);
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Voto enviado com sucesso"),
+                            ));
                           }
                         });
                       },
                       child: Text('Não Gosto'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _listaLocaisInteresse![index]
-                            ._DislikeButtonColor,
+                        backgroundColor: _listaLocaisInteresse![index]._DislikeButtonColor,
                         foregroundColor: Colors.white,
                       ),
                     ),
 
                     Text(
-                      _listaLocaisInteresse![index]
-                          .numNaoGostos.toString(),
+                      _listaLocaisInteresse![index].numNaoGostos.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
