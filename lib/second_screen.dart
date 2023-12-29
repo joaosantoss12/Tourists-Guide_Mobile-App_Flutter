@@ -107,10 +107,21 @@ class _SecondScreenState extends State<SecondScreen> {
       children: <Widget>[
         Text(
           _listaLocaisInteresse![index].nome,
-          style: Theme
-              .of(context)
-              .textTheme
-              .headlineSmall,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+
+
+
+
+        Container(
+          margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5.0),
+            child: Image.network(
+              _listaLocaisInteresse![index].imagemURL,
+              width: MediaQuery.of(context).size.width * 0.9,
+            ),
+          ),
         ),
 
         ElevatedButton(
@@ -121,16 +132,13 @@ class _SecondScreenState extends State<SecondScreen> {
                   _buildPopupDialog(context, index),
             );
 
-            if (_historicoLocaisInteresse_json.length ==
-                10) {
+            if (_historicoLocaisInteresse_json.length == 10) {
               _historicoLocaisInteresse_json.removeAt(0);
             }
 
-            var serializedObject = jsonEncode(
-                _listaLocaisInteresse![index].toJson());
+            var serializedObject = jsonEncode(_listaLocaisInteresse![index].toJson());
 
-            _historicoLocaisInteresse_json.add(
-                serializedObject);
+            _historicoLocaisInteresse_json.add(serializedObject);
 
             var prefs = await SharedPreferences
                 .getInstance();
@@ -142,27 +150,20 @@ class _SecondScreenState extends State<SecondScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
+            padding: EdgeInsets.all(13.0), // Button padding
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0), // Button border radius
+            ),
           ),
 
         ),
 
-        Container(
-          margin: EdgeInsets.only(
-              top: 10.0, bottom: 10.0),
-          // Adjust the margin as needed
-          child: Image.network(
-            _listaLocaisInteresse![index].imagemURL,
-          ),
-        ),
+        SizedBox(height: 16.0),
 
         Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width * 0.7,
+          width: MediaQuery.of(context).size.width * 0.7,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment
-                .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
 
               Container(
@@ -170,6 +171,8 @@ class _SecondScreenState extends State<SecondScreen> {
                   mainAxisAlignment: MainAxisAlignment
                       .spaceBetween,
                   children: <Widget>[
+
+
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -198,6 +201,7 @@ class _SecondScreenState extends State<SecondScreen> {
                         backgroundColor: _listaLocaisInteresse![index]
                             ._LikeButtonColor,
                         foregroundColor: Colors.white,
+
                       ),
                     ),
 
@@ -536,11 +540,7 @@ class _SecondScreenState extends State<SecondScreen> {
     return Scaffold(
         appBar: AppBar(
 
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
-
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.title),
         ),
         body: Center(
@@ -551,7 +551,11 @@ class _SecondScreenState extends State<SecondScreen> {
             children: <Widget>[
 
               if(!_fetchingData && _listaLocaisInteresse!.isNotEmpty && _listaCategorias!.isNotEmpty)
-                DropdownMenu<String>(
+                Container(
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
+                    width: 200, // Ajuste a largura conforme necessário
+
+                    child:DropdownMenu<String>(
                   initialSelection: dropdownValue,
                   onSelected: (String? value) {
                     setState(() {
@@ -576,6 +580,8 @@ class _SecondScreenState extends State<SecondScreen> {
                     return DropdownMenuEntry<String>(value: value, label: value);
                   }).toList(),
                 ),
+                ),
+
 
 
               if (!_fetchingData && _listaCategorias != null && _listaCategorias!.isNotEmpty)
@@ -595,18 +601,26 @@ class _SecondScreenState extends State<SecondScreen> {
                         },
                         child: Container(
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2), //sombreado preto
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                            ),
+                          ],
                           image: DecorationImage(
-                            image: NetworkImage(_listaCategorias?[index].imagemURL), // replace with your image URL
+                            image: NetworkImage(_listaCategorias?[index].imagemURL),
                             fit: BoxFit.cover,
                           ),
                         ),
                         height: 50,
-                        width: 100,
-                        margin: EdgeInsets.all(15),
+                        width: 120,
+                        margin: EdgeInsets.all(5),
                         child: Center(
                           child: Text(
                             _listaCategorias?[index].nome,
-                            style: const TextStyle(color: Colors.white, fontSize: 12,fontWeight: FontWeight.bold, shadows: [
+                            style: const TextStyle(color: Colors.white, fontSize: 13,fontWeight: FontWeight.bold, shadows: [
                               Shadow(
                                 blurRadius: 10.0,
                                 color: Colors.black,
