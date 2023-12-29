@@ -30,11 +30,8 @@ class LocalInteresse {
     return {
       'nome': nome,
       'descricao': descricao,
-      'latitude': latitude,
-      'longitude': longitude,
+      'distancia': distancia,
       'imagemURL': imagemURL,
-      'estado': estado,
-      'categoria': categoria,
     };
   }
 
@@ -43,10 +40,7 @@ class LocalInteresse {
   LocalInteresse.fromJson(Map  json)
       : nome = json['nome'],
         descricao = json['descricao'],
-        latitude = json['latitude'],
-        longitude = json['longitude'],
         imagemURL = json['imagemURL'],
-        estado = json['estado'],
         categoria = json['categoria'];
 
 }
@@ -111,8 +105,6 @@ class _SecondScreenState extends State<SecondScreen> {
         ),
 
 
-
-
         Container(
           margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
           child: ClipRRect(
@@ -158,10 +150,11 @@ class _SecondScreenState extends State<SecondScreen> {
 
         ),
 
-        SizedBox(height: 16.0),
+
 
         Container(
           width: MediaQuery.of(context).size.width * 0.7,
+          margin: EdgeInsets.only(top: 20.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -646,7 +639,7 @@ class _SecondScreenState extends State<SecondScreen> {
               if (!_fetchingData && _listaLocaisInteresse != null && _listaLocaisInteresse!.isNotEmpty)
                 Expanded(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
+                    width: MediaQuery.of(context).size.width * 0.9, // Adjust the margin as needed
                     child: ListView.separated(
                       itemCount: _listaLocaisInteresse!.length,
 
