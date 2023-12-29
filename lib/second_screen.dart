@@ -322,7 +322,11 @@ class _SecondScreenState extends State<SecondScreen> {
         var categoria = Categoria();
         categoria.nome = doc['nome'];
         categoria.imagemURL = doc['imagemURL'];
-        _listaCategorias!.add(categoria);
+        var estado = doc['estado'];
+
+        if(estado == "aprovado") {
+          _listaCategorias!.add(categoria);
+        }
       }
     }
     catch (ex) {
@@ -373,8 +377,9 @@ class _SecondScreenState extends State<SecondScreen> {
           l._DislikeButtonColor = prefs.getInt (l.nome+"dislike") == 1 ? Colors.red : Colors.blueGrey;
         });
 
-
-        _listaLocaisInteresse!.add(l);
+        if(l.estado == "aprovado") {
+          _listaLocaisInteresse!.add(l);
+        }
       }
     }
     catch (ex) {
@@ -549,10 +554,10 @@ class _SecondScreenState extends State<SecondScreen> {
                     width: 200, // Ajuste a largura conforme necessário
 
                     child:DropdownMenu<String>(
-                  initialSelection: dropdownValue,
-                  onSelected: (String? value) {
-                    setState(() {
-                      dropdownValue = value!;
+                    initialSelection: dropdownValue,
+                    onSelected: (String? value) {
+                      setState(() {
+                        dropdownValue = value!;
                       switch(dropdownValue){
                         case 'A-Z':
                           _listaLocaisInteresse!.sort((a, b) => a.nome.compareTo(b.nome));
@@ -586,9 +591,10 @@ class _SecondScreenState extends State<SecondScreen> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) => GestureDetector(
                         onTap: () {
-                          setState(() {
-                            currentCategoria = _listaCategorias![index].nome;
-                          });
+                            setState(() {
+                              currentCategoria = _listaCategorias![index].nome;
+                            });
+
                           //_fetchCategorias();
                           //_fetchLocaisInteresse();
                         },
@@ -602,6 +608,7 @@ class _SecondScreenState extends State<SecondScreen> {
                               blurRadius: 5,
                             ),
                           ],
+
                           image: DecorationImage(
                             image: NetworkImage(_listaCategorias?[index].imagemURL),
                             fit: BoxFit.cover,
@@ -625,10 +632,32 @@ class _SecondScreenState extends State<SecondScreen> {
                       ),
                     ),
                   ),
+
                 ),
                 ),
                 ),
                 //),
+
+              Container(
+                margin: EdgeInsets.only(bottom: 10.0), // Adjust the margin as needed
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      currentCategoria = null;
+                    });
+                  },
+                  child: const Text('Todas as Categorias'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.all(13.0), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), // Button border radius
+                    ),
+                  ),
+                ),
+              ),
+
 
 
 

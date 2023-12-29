@@ -123,7 +123,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
 
               l.distancia =  distanceX+distanceY;
-              _listaLocalizacoes!.add(l);
+
+                if(l.estado=="aprovado") {
+                  _listaLocalizacoes!.add(l);
+                }
           }
       }
       catch(ex){
