@@ -86,7 +86,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       Text(
-                        _listaLocaisInteresse![index].descricao ?? 'Descrição null',
+                        _listaLocaisInteresse![index].descricao ?? 'DescriÃ§Ã£o null',
                       ),
                       Text(
                         'Categoria: ${_listaLocaisInteresse![index].categoria ?? 'Categoria null'}',

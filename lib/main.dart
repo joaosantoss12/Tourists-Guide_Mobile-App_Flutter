@@ -86,10 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     location.getLocation();
-    _initializeData();
-  }
-  Future<void> _initializeData() async {
-    await _fetchLocalizacoes();
+    _fetchLocalizacoes();
   }
 
   @override

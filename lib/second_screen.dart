@@ -84,20 +84,188 @@ class _SecondScreenState extends State<SecondScreen> {
   List<Categoria>? _listaCategorias = [];
   bool _fetchingData = false;
 
-  String? currentCategoria = null;
+  String? currentCategoria;
 
   String dropdownValue = 'none';
   List<String> list = ['A-Z', 'Z-A', 'Distância ▲', 'Distância ▼'];
 
-  String? _currentLocalInteresse = null;
+  String? _currentLocalInteresse;
 
-  String? _error = null;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     location.getLocation();
+    _fetchCategorias();
+    _fetchLocaisInteresse();
   }
+
+  // CUSTOM WIDGET PARA IMPRIMIR UM LOCAL DE INTERESSE
+  Widget buildLocalInterestItem(List<LocalInteresse>? _listaLocaisInteresse, int index) {
+    return Column(
+      children: <Widget>[
+        Text(
+          _listaLocaisInteresse![index].nome,
+          style: Theme
+              .of(context)
+              .textTheme
+              .headlineSmall,
+        ),
+
+        ElevatedButton(
+          onPressed: () async {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupDialog(context, index),
+            );
+
+            if (_historicoLocaisInteresse_json.length ==
+                10) {
+              _historicoLocaisInteresse_json.removeAt(0);
+            }
+
+            var serializedObject = jsonEncode(
+                _listaLocaisInteresse![index].toJson());
+
+            _historicoLocaisInteresse_json.add(
+                serializedObject);
+
+            var prefs = await SharedPreferences
+                .getInstance();
+            await prefs.setStringList(
+                "listaLocaisInteresseHistorico_json",
+                _historicoLocaisInteresse_json);
+          },
+          child: const Text('Ver Mais'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+          ),
+
+        ),
+
+        Container(
+          margin: EdgeInsets.only(
+              top: 10.0, bottom: 10.0),
+          // Adjust the margin as needed
+          child: Image.network(
+            _listaLocaisInteresse![index].imagemURL,
+          ),
+        ),
+
+        Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width * 0.7,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment
+                .spaceBetween,
+            children: <Widget>[
+
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _currentLocalInteresse =
+                              _listaLocaisInteresse![index]
+                                  .nome;
+
+                          if (_listaLocaisInteresse![index]
+                              ._LikeButtonColor ==
+                              Colors.green) {
+                            removeLike(index, true);
+                          }
+                          else {
+                            if (_listaLocaisInteresse![index]
+                                ._DislikeButtonColor ==
+                                Colors.red) {
+                              removeDislike(index, false);
+                            }
+
+                            addLike(index, true);
+                          }
+                        });
+                      },
+                      child: Text('Gosto'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _listaLocaisInteresse![index]
+                            ._LikeButtonColor,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+
+                    Text(
+                      _listaLocaisInteresse![index]
+                          .numGostos.toString(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Spacer(),
+
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _currentLocalInteresse =
+                              _listaLocaisInteresse![index]
+                                  .nome;
+                          if (_listaLocaisInteresse![index]
+                              ._DislikeButtonColor ==
+                              Colors.red) {
+                            removeDislike(index, true);
+                          }
+                          else {
+                            if (_listaLocaisInteresse![index]
+                                ._LikeButtonColor ==
+                                Colors.green) {
+                              removeLike(index, false);
+                            }
+
+                            addDislike(index, true);
+                          }
+                        });
+                      },
+                      child: Text('Não Gosto'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _listaLocaisInteresse![index]
+                            ._DislikeButtonColor,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+
+                    Text(
+                      _listaLocaisInteresse![index]
+                          .numNaoGostos.toString(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
 
 
   // LOCATION
@@ -382,14 +550,10 @@ class _SecondScreenState extends State<SecondScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
 
-              if (!_fetchingData && (_listaLocaisInteresse == null || _listaLocaisInteresse!.isEmpty) && (_listaCategorias == null || _listaCategorias!.isEmpty))
-                const Text('Refresh para carregar dados'),
-
-              if(!_fetchingData && _listaLocaisInteresse != null && _listaLocaisInteresse!.isNotEmpty && _listaCategorias != null && _listaCategorias!.isNotEmpty)
+              if(!_fetchingData && _listaLocaisInteresse!.isNotEmpty && _listaCategorias!.isNotEmpty)
                 DropdownMenu<String>(
                   initialSelection: dropdownValue,
                   onSelected: (String? value) {
-                    // This is called when the user selects an item.
                     setState(() {
                       dropdownValue = value!;
                       switch(dropdownValue){
@@ -426,7 +590,8 @@ class _SecondScreenState extends State<SecondScreen> {
                           setState(() {
                             currentCategoria = _listaCategorias![index].nome;
                           });
-
+                          //_fetchCategorias();
+                          //_fetchLocaisInteresse();
                         },
                         child: Container(
                         decoration: BoxDecoration(
@@ -472,336 +637,19 @@ class _SecondScreenState extends State<SecondScreen> {
                       itemCount: _listaLocaisInteresse!.length,
 
                       separatorBuilder: (_, __) => Container(
-                        margin: EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
-                        child: Divider(thickness: 2.0),
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10.0), // Adjust the margin as needed
+                        child: const Divider(thickness: 2.0),
                       ),
 
                       itemBuilder: (BuildContext context, int index) {
                         if(currentCategoria != null && _listaLocaisInteresse![index].categoria == currentCategoria) {
-                          return Column(
-                            children: <Widget>[
-                              Text(
-                                _listaLocaisInteresse![index].nome,
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .headlineSmall,
-                              ),
-
-                              ElevatedButton(
-                                onPressed: () async {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        _buildPopupDialog(context, index),
-                                  );
-
-                                  if (_historicoLocaisInteresse_json.length ==
-                                      10) {
-                                    _historicoLocaisInteresse_json.removeAt(0);
-                                  }
-
-                                  var serializedObject = jsonEncode(
-                                      _listaLocaisInteresse![index].toJson());
-
-                                  _historicoLocaisInteresse_json.add(
-                                      serializedObject);
-
-                                  var prefs = await SharedPreferences
-                                      .getInstance();
-                                  await prefs.setStringList(
-                                      "listaLocaisInteresseHistorico_json",
-                                      _historicoLocaisInteresse_json);
-                                },
-                                child: const Text('Ver Mais'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                ),
-
-                              ),
-
-                              Container(
-                                margin: EdgeInsets.only(
-                                    top: 10.0, bottom: 10.0),
-                                // Adjust the margin as needed
-                                child: Image.network(
-                                  _listaLocaisInteresse![index].imagemURL,
-                                ),
-                              ),
-
-                              Container(
-                                width: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width * 0.7,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceBetween,
-                                  children: <Widget>[
-
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: <Widget>[
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _currentLocalInteresse =
-                                                    _listaLocaisInteresse![index]
-                                                        .nome;
-
-                                                if (_listaLocaisInteresse![index]
-                                                    ._LikeButtonColor ==
-                                                    Colors.green) {
-                                                  removeLike(index, true);
-                                                }
-                                                else {
-                                                  if (_listaLocaisInteresse![index]
-                                                      ._DislikeButtonColor ==
-                                                      Colors.red) {
-                                                    removeDislike(index, false);
-                                                  }
-
-                                                  addLike(index, true);
-                                                }
-                                              });
-                                            },
-                                            child: Text('Gosto'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: _listaLocaisInteresse![index]
-                                                  ._LikeButtonColor,
-                                              foregroundColor: Colors.white,
-                                            ),
-                                          ),
-
-                                          Text(
-                                            _listaLocaisInteresse![index]
-                                                .numGostos.toString(),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Spacer(),
-
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: <Widget>[
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _currentLocalInteresse =
-                                                    _listaLocaisInteresse![index]
-                                                        .nome;
-                                                if (_listaLocaisInteresse![index]
-                                                    ._DislikeButtonColor ==
-                                                    Colors.red) {
-                                                  removeDislike(index, true);
-                                                }
-                                                else {
-                                                  if (_listaLocaisInteresse![index]
-                                                      ._LikeButtonColor ==
-                                                      Colors.green) {
-                                                    removeLike(index, false);
-                                                  }
-
-                                                  addDislike(index, true);
-                                                }
-                                              });
-                                            },
-                                            child: Text('Não Gosto'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: _listaLocaisInteresse![index]
-                                                  ._DislikeButtonColor,
-                                              foregroundColor: Colors.white,
-                                            ),
-                                          ),
-
-                                          Text(
-                                            _listaLocaisInteresse![index]
-                                                .numNaoGostos.toString(),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          );
+                          return buildLocalInterestItem(_listaLocaisInteresse, index);
                         }
                         else if(currentCategoria == null){
-                          return Column(
-                            children: <Widget>[
-                              Text(
-                                _listaLocaisInteresse![index].nome,
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .headlineSmall,
-                              ),
-
-                              ElevatedButton(
-                                onPressed: () async {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        _buildPopupDialog(context, index),
-                                  );
-
-                                  if (_historicoLocaisInteresse_json.length ==
-                                      10) {
-                                    _historicoLocaisInteresse_json.removeAt(0);
-                                  }
-
-                                  var serializedObject = jsonEncode(
-                                      _listaLocaisInteresse![index].toJson());
-
-                                  _historicoLocaisInteresse_json.add(
-                                      serializedObject);
-
-                                  var prefs = await SharedPreferences
-                                      .getInstance();
-                                  await prefs.setStringList(
-                                      "listaLocaisInteresseHistorico_json",
-                                      _historicoLocaisInteresse_json);
-                                },
-                                child: const Text('Ver Mais'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                ),
-
-                              ),
-
-                              Container(
-                                margin: EdgeInsets.only(
-                                    top: 10.0, bottom: 10.0),
-                                // Adjust the margin as needed
-                                child: Image.network(
-                                  _listaLocaisInteresse![index].imagemURL,
-                                ),
-                              ),
-
-                              Container(
-                                width: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width * 0.7,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceBetween,
-                                  children: <Widget>[
-
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: <Widget>[
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _currentLocalInteresse =
-                                                    _listaLocaisInteresse![index]
-                                                        .nome;
-
-                                                if (_listaLocaisInteresse![index]
-                                                    ._LikeButtonColor ==
-                                                    Colors.green) {
-                                                  removeLike(index, true);
-                                                }
-                                                else {
-                                                  if (_listaLocaisInteresse![index]
-                                                      ._DislikeButtonColor ==
-                                                      Colors.red) {
-                                                    removeDislike(index, false);
-                                                  }
-
-                                                  addLike(index, true);
-                                                }
-                                              });
-                                            },
-                                            child: Text('Gosto'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: _listaLocaisInteresse![index]
-                                                  ._LikeButtonColor,
-                                              foregroundColor: Colors.white,
-                                            ),
-                                          ),
-
-                                          Text(
-                                            _listaLocaisInteresse![index]
-                                                .numGostos.toString(),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Spacer(),
-
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: <Widget>[
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _currentLocalInteresse =
-                                                    _listaLocaisInteresse![index]
-                                                        .nome;
-                                                if (_listaLocaisInteresse![index]
-                                                    ._DislikeButtonColor ==
-                                                    Colors.red) {
-                                                  removeDislike(index, true);
-                                                }
-                                                else {
-                                                  if (_listaLocaisInteresse![index]
-                                                      ._LikeButtonColor ==
-                                                      Colors.green) {
-                                                    removeLike(index, false);
-                                                  }
-
-                                                  addDislike(index, true);
-                                                }
-                                              });
-                                            },
-                                            child: Text('Não Gosto'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: _listaLocaisInteresse![index]
-                                                  ._DislikeButtonColor,
-                                              foregroundColor: Colors.white,
-                                            ),
-                                          ),
-
-                                          Text(
-                                            _listaLocaisInteresse![index]
-                                                .numNaoGostos.toString(),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          );
+                          return buildLocalInterestItem(_listaLocaisInteresse, index);
+                        }
+                        else {
+                          return Container();
                         }
                       }
                 )
