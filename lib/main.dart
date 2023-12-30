@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
+import 'map_screen.dart';
 import 'second_screen.dart';
 import 'history_screen.dart';
 
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
         MyHomePage.routeName: (context) => const MyHomePage(title: 'Localizações'),
         SecondScreen.routeName : (context) => const SecondScreen(),
         HistoryScreen.routeName : (context) => const HistoryScreen(),
+        MapScreen.routeName : (context) => const MapScreen(),
       },
     );
   }
@@ -283,16 +285,38 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                SecondScreen.routeName,
-                                arguments: _listaLocalizacoes![index].nome,
-                              );
-                            },
-                            child: Text('Locais de Interesse'),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    MapScreen.routeName,
+                                    arguments: {'latitude': _listaLocalizacoes![index].latitude, 'longitude': _listaLocalizacoes![index].longitude},
+                                  );
+                                },
+                                child: Text('Mapa'),
+                              ),
+
+
+
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    SecondScreen.routeName,
+                                    arguments: _listaLocalizacoes![index].nome,
+                                  );
+                                },
+                                child: Text('Locais de Interesse'),
+                              ),
+                            ],
                           )
+
+
+
                         ],
                       ),
                     ),
