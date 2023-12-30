@@ -146,7 +146,6 @@ class _SecondScreenState extends State<SecondScreen> {
                 "listaLocaisInteresseHistorico_json",
                 _historicoLocaisInteresse_json);
           },
-          child: const Text('Ver Mais'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
@@ -155,6 +154,7 @@ class _SecondScreenState extends State<SecondScreen> {
               borderRadius: BorderRadius.circular(8.0), // Button border radius
             ),
           ),
+          child: const Text('Ver Mais'),
 
         ),
 
@@ -198,12 +198,12 @@ class _SecondScreenState extends State<SecondScreen> {
                           }
                         });
                       },
-                      child: Text('Gosto'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _listaLocaisInteresse![index]._LikeButtonColor,
                         foregroundColor: Colors.white,
 
                       ),
+                      child: Text('Gosto'),
                     ),
 
                     Text(
@@ -647,14 +647,13 @@ class _SecondScreenState extends State<SecondScreen> {
                 //),
 
               Container(
-                margin: EdgeInsets.only(bottom: 10.0), // Adjust the margin as needed
+                margin: EdgeInsets.only(bottom: 10.0),
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
                       currentCategoria = null;
                     });
                   },
-                  child: const Text('Todas as Categorias'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -663,6 +662,7 @@ class _SecondScreenState extends State<SecondScreen> {
                       borderRadius: BorderRadius.circular(8.0), // Button border radius
                     ),
                   ),
+                  child: const Text('Todas as Categorias'),
                 ),
               ),
 
