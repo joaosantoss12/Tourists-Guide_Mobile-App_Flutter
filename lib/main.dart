@@ -289,18 +289,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
+
                               ElevatedButton(
                                 onPressed: () {
                                   Navigator.pushNamed(
                                     context,
                                     MapScreen.routeName,
-                                    arguments: {'latitude': _listaLocalizacoes![index].latitude, 'longitude': _listaLocalizacoes![index].longitude},
+                                    arguments: {'latitude': _listaLocalizacoes![index].latitude, 'longitude': _listaLocalizacoes![index].longitude, 'tipo': 'Localização'},
                                   );
                                 },
                                 child: Text('Mapa'),
                               ),
-
-
 
                               ElevatedButton(
                                 onPressed: () {

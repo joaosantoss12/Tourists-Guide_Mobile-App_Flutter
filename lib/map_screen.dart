@@ -23,7 +23,6 @@ class MapScreen extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     throw UnimplementedError();
   }
 }
@@ -31,6 +30,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late double latitude;
   late double longitude;
+  late String tipo;
 
   late String apiKey;
   late String mapImageUrl;
@@ -44,16 +44,25 @@ class _MapScreenState extends State<MapScreen> {
 
     latitude = arguments['latitude']!.toDouble();
     longitude = arguments['longitude']!.toDouble();
+    tipo = arguments['tipo'];
 
     apiKey = "AIzaSyCQd4PR7D_4NNKCIwufCQG7cbVXEZs4PMU";
     mapImageUrl = getMapImageUrl();
   }
 
   String getMapImageUrl() {
+    var parameters;
+    if(tipo == "Localização"){
+      parameters = "zoom=10&size=500x500";
+    }
+    else{
+      parameters = "zoom=15&size=500x500";
+    }
+
     const String baseUrl = "https://maps.googleapis.com/maps/api/staticmap";
     final String markers = "markers=$latitude,$longitude";
 
-    return "$baseUrl?center=$latitude,$longitude&zoom=10&size=500x500&$markers&key=$apiKey";
+    return "$baseUrl?center=$latitude,$longitude&$parameters&$markers&key=$apiKey";
   }
 
   @override

@@ -10,6 +10,8 @@ import 'firebase_options.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'map_screen.dart';
+
 class LocalInteresse {
   var nome;
   var descricao;
@@ -124,6 +126,21 @@ class _SecondScreenState extends State<SecondScreen> {
           ),
         ),
 
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+             children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  MapScreen.routeName,
+                  arguments: {'latitude': _listaLocaisInteresse[index].latitude, 'longitude': _listaLocaisInteresse[index].longitude, 'tipo': "Local de Interesse"},
+                );
+              },
+              child: Text('Mapa'),
+            ),
+
         ElevatedButton(
           onPressed: () async {
             showDialog(
@@ -157,6 +174,8 @@ class _SecondScreenState extends State<SecondScreen> {
           child: const Text('Ver Mais'),
 
         ),
+        ],
+            ),
 
 
 
