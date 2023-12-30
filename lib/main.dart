@@ -204,6 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
 
+
             Container(
               margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
 
@@ -273,11 +274,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           Container(
                             margin: EdgeInsets.all(10.0),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
+                              borderRadius: BorderRadius.circular(10.0),
                               child: Image.network(
                                 _listaLocalizacoes![index].imagemURL,
-                                width: double.infinity,
-                                height: 200.0, // Adjust the height as needed
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                height: 200.0,
                                 fit: BoxFit.cover,
                               ),
                             ),

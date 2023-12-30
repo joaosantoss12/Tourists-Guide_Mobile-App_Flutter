@@ -97,21 +97,29 @@ class _SecondScreenState extends State<SecondScreen> {
 
   // CUSTOM WIDGET PARA IMPRIMIR UM LOCAL DE INTERESSE
   Widget buildLocalInterestItem(List<LocalInteresse>? _listaLocaisInteresse, int index) {
-    return Column(
-      children: <Widget>[
-        Text(
-          _listaLocaisInteresse![index].nome,
-          style: Theme.of(context).textTheme.headlineSmall,
+    return Card(
+        elevation: 4.0, // Sombra do card
+        margin: EdgeInsets.all(10.0), // Margem em torno do card
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Text(
+              _listaLocaisInteresse![index].nome,
+            style: Theme.of(context).textTheme.headlineSmall,
         ),
+      ),
 
 
         Container(
-          margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+          margin: EdgeInsets.all(10.0),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5.0),
             child: Image.network(
               _listaLocaisInteresse![index].imagemURL,
               width: MediaQuery.of(context).size.width * 0.9,
+              height: 200.0,
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -258,7 +266,9 @@ class _SecondScreenState extends State<SecondScreen> {
           ),
         )
       ],
+    ),
     );
+
   }
 
 
