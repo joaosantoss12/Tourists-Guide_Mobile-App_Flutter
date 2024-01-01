@@ -88,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     location.getLocation();
+    getLocation();
     _fetchLocalizacoes();
   }
 
@@ -114,8 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
               l.imagemURL = doc['imagemURL'];
               l.estado = doc['estado'];
 
-              var distanceX=_locationData.latitude!-l.latitude;
-              var distanceY=_locationData.longitude!-l.longitude;
+              var distanceX = _locationData.latitude!-l.latitude;
+              var distanceY = _locationData.longitude!-l.longitude;
 
               if(distanceX<0){
                 distanceX=distanceX*-1;
@@ -148,10 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
-  LocationData _locationData = LocationData.fromMap({
-    "latitude": 40.192639,
-    "longitude": -8.411899,
-  });
+  LocationData _locationData = LocationData.fromMap({'latitude': 0.0, 'longitude': 0.0});
 
   void getLocation() async {
     _serviceEnabled = await location.serviceEnabled();
@@ -173,18 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() { });
   }
 
-  StreamSubscription<LocationData>? _locationSubscription;
-
-  void startLocationUpdates() {
-    _locationSubscription=location.onLocationChanged.listen((LocationData currentLocation) {
-      setState(() {_locationData = currentLocation;});
-    });
-  }
-
-  void stopLocationUpdates() {
-    _locationSubscription?.cancel();
-    _locationSubscription=null;
-  }
 
   // END LOCATION
 
@@ -335,16 +321,11 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton : FloatingActionButton(
         onPressed: () {
             setState(() => _fetchingData = true);
+            getLocation();
             _fetchLocalizacoes();
         },
         child: const Icon(Icons.refresh),
       )
-      /*floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.pushNamed(context, SecondScreen.routeName, arguments: 69);
-        },
-        child: const Text('Locais de Interesse'),
-      ), */// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
