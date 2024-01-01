@@ -66,7 +66,6 @@ class SecondScreen extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     throw UnimplementedError();
   }
 }
@@ -92,7 +91,6 @@ class _SecondScreenState extends State<SecondScreen> {
   @override
   void initState() {
     super.initState();
-    location.getLocation();
     _fetchCategorias();
     _fetchLocaisInteresse();
   }
@@ -297,12 +295,9 @@ class _SecondScreenState extends State<SecondScreen> {
 
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
-  LocationData _locationData = LocationData.fromMap({
-    "latitude": 40.192639,
-    "longitude": -8.411899,
-  });
+  LocationData _locationData = LocationData.fromMap({"latitude": 0.0, "longitude": 0.0});
 
-  void getLocation() async {
+  Future<void> getLocation() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -320,19 +315,6 @@ class _SecondScreenState extends State<SecondScreen> {
     }
     _locationData = await location.getLocation();
     setState(() { });
-  }
-
-  StreamSubscription<LocationData>? _locationSubscription;
-
-  void startLocationUpdates() {
-    _locationSubscription=location.onLocationChanged.listen((LocationData currentLocation) {
-      setState(() {_locationData = currentLocation;});
-    });
-  }
-
-  void stopLocationUpdates() {
-    _locationSubscription?.cancel();
-    _locationSubscription=null;
   }
 
   // END LOCATION
@@ -379,6 +361,8 @@ class _SecondScreenState extends State<SecondScreen> {
         l.longitude = (doc['coordenadas'] as GeoPoint).longitude;
         l.imagemURL = doc['imagemURL'];
         l.estado = doc['estado'];
+
+        await getLocation();
 
          var distanceX=_locationData.latitude!-l.latitude;
          var distanceY=_locationData.longitude!-l.longitude;

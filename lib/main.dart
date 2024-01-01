@@ -87,8 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    location.getLocation();
-    getLocation();
     _fetchLocalizacoes();
   }
 
@@ -115,6 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
               l.imagemURL = doc['imagemURL'];
               l.estado = doc['estado'];
 
+              await getLocation();
+
               var distanceX = _locationData.latitude!-l.latitude;
               var distanceY = _locationData.longitude!-l.longitude;
 
@@ -127,9 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
               l.distancia =  distanceX+distanceY;
 
-                if(l.estado=="aprovado") {
-                  _listaLocalizacoes!.add(l);
-                }
+              if(l.estado=="aprovado") {
+                _listaLocalizacoes!.add(l);
+              }
           }
       }
       catch(ex){
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
   PermissionStatus _permissionGranted = PermissionStatus.denied;
   LocationData _locationData = LocationData.fromMap({'latitude': 0.0, 'longitude': 0.0});
 
-  void getLocation() async {
+  Future<void> getLocation() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -210,10 +210,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       _listaLocalizacoes!.sort((a, b) => b.nome.compareTo(a.nome));
                       break;
                     case 'Distância ▲':
+                        //getLocation();
                         _listaLocalizacoes!.sort((a, b) => a.distancia.compareTo(b.distancia));
 
                       break;
                     case 'Distância ▼':
+                        //getLocation();
                         _listaLocalizacoes!.sort((a, b) => b.distancia.compareTo(a.distancia));
 
                       break;
@@ -321,7 +323,6 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton : FloatingActionButton(
         onPressed: () {
             setState(() => _fetchingData = true);
-            getLocation();
             _fetchLocalizacoes();
         },
         child: const Icon(Icons.refresh),
