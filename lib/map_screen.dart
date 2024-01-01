@@ -1,14 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:location/location.dart';
-import 'firebase_options.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -39,7 +29,6 @@ class _MapScreenState extends State<MapScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Accessing arguments in didChangeDependencies
     Map<String, dynamic> arguments = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     latitude = arguments['latitude']!.toDouble();

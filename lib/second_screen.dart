@@ -715,12 +715,6 @@ class _SecondScreenState extends State<SecondScreen> {
           },
           child: const Icon(Icons.refresh),
         )
-      /*floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.pushNamed(context, SecondScreen.routeName, arguments: 69);
-        },
-        child: const Text('Locais de Interesse'),
-      ), */// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

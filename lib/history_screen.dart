@@ -26,8 +26,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   List<LocalInteresse>? _listaLocaisInteresse = [];
   bool _fetchingData = false;
 
-  var teste = 'teste';
-
   @override
   void initState() {
     super.initState();

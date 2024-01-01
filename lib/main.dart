@@ -52,7 +52,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
         useMaterial3: true,
       ),
-      //home: const MyHomePage(title: 'JourneyBuddy'),
       initialRoute: MyHomePage.routeName,
       routes: {
         MyHomePage.routeName: (context) => const MyHomePage(title: 'Localizações'),
